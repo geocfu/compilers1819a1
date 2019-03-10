@@ -1,9 +1,9 @@
-"""
+'''
 Sample script to test ad-hoc scanning by table drive.
 This accepts a number with optional decimal part [0-9]+(\.[0-9]+)?
 
 NOTE: suitable for optional matches
-"""
+'''
 
 def getchar(text,pos):
 	""" returns char category at position `pos` of `text`,
@@ -14,11 +14,36 @@ def getchar(text,pos):
 	c = text[pos]
 	
 	# **Σημείο #3**: Προαιρετικά, προσθέστε τις δικές σας ομαδοποιήσεις
+	if c == '0':
+		return 'DIGIT == 0'
+	if c == '1':
+		return 'DIGIT == 1'
+	if c == '2':
+		return 'DIGIT == 2'
+	if c == '3':
+		return 'DIGIT == 3'
+	if c == '4':
+		return 'DIGIT == 4'
+	if c == '5':
+		return 'DIGIT == 5'
+	if c >= '6' and c <= '9':
+		return 'DIGIT >= 6 and DIGIT <= 9'
 	
-	if c>='0' and c<='9': return 'DIGIT'	# 0..9 grouped together
+	if c == 'G':
+		return 'INPUT is G'
 	
-	if c=='.': return 'DOT'	# dot as a category by itself
+	if c == 'K':
+		return 'INPUT is K'
+	if c == 'T':
+		return 'INPUT is T'
 	
+	if c == 'M':
+		return 'INPUT is M'
+	if c == 'P':
+		return 'INPUT is P'
+	if c == 'S':
+		return 'INPUT is S'
+
 	return c	# anything else
 	
 
@@ -58,18 +83,24 @@ def scan(text,transitions,accepts):
 			# else, no accepting state met yet
 			return 'ERROR_TOKEN',pos
 			
-	
 # **Σημείο #1**: Αντικαταστήστε με το δικό σας λεξικό μεταβάσεων
-transitions = { 's0': { 'DIGIT':'s1' },
-       			's1': { 'DIGIT':'s1','DOT':'s2' },
-       			's2': { 'DIGIT':'s3' },
-       			's3': { 'DIGIT':'s3' }       
-     		  } 
+transitions = { 's0': {'DIGIT == 0': 's1', 'DIGIT == 1': 's1', 'DIGIT == 2': 's1', 'DIGIT == 3': 's2'},
+				's1': {'DIGIT == 0': 's3', 'DIGIT == 1': 's3', 'DIGIT == 2': 's3', 'DIGIT == 3': 's3', 'DIGIT == 4': 's3', 'DIGIT == 5': 's3', 'DIGIT >= 6 and DIGIT <= 9': 's3'},
+				's2': {'DIGIT == 0': 's3', 'DIGIT == 1': 's3', 'DIGIT == 2': 's3', 'DIGIT == 3': 's3', 'DIGIT == 4': 's3', 'DIGIT == 5': 's3'},
+				's3': {'DIGIT == 0': 's4'},
+				's4': {'DIGIT == 0': 's5', 'DIGIT == 1': 's5', 'DIGIT == 2': 's5', 'DIGIT == 3': 's5', 'DIGIT == 4': 's5', 'DIGIT == 5': 's5', 'DIGIT >= 6 and DIGIT <= 9': 's5'},
+				's5': {'DIGIT == 0': 's6', 'DIGIT == 1': 's6', 'DIGIT == 2': 's6', 'DIGIT == 3': 's6', 'DIGIT == 4': 's6', 'DIGIT == 5': 's6', 'DIGIT >= 6 and DIGIT <= 9': 's6'},
+				's6': {'INPUT is G': 's7', 'INPUT is K': 's10', 'INPUT is M': 's12'},
+				's7': {'DIGIT == 0': 's8', 'DIGIT == 1': 's8', 'DIGIT == 2': 's8', 'DIGIT == 3': 's8', 'DIGIT == 4': 's8', 'DIGIT == 5': 's8', 'DIGIT >= 6 and DIGIT <= 9': 's8'},
+				's8': {'DIGIT == 0': 's9', 'DIGIT == 1': 's9', 'DIGIT == 2': 's9', 'DIGIT == 3': 's9', 'DIGIT == 4': 's9', 'DIGIT == 5': 's9', 'DIGIT >= 6 and DIGIT <= 9': 's9'},
+				's9': {'INPUT is K': 's10', 'INPUT is M': 's12'},
+				's10': {'INPUT is T': 's11'},
+				's12': {'INPUT is P': 's13'},
+				's13': {'INPUT is S': 's11'}
+				} 
 
 # **Σημείο #2**: Αντικαταστήστε με το δικό σας λεξικό καταστάσεων αποδοχής
-accepts = { 's1':'INT_TOKEN',
-       		's3':'FLOAT_TOKEN'	
-     	  }
+accepts = {'s11': 'WIND_TOKEN'}
 
 
 # get a string from input
